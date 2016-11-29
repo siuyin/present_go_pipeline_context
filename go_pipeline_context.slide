@@ -1,0 +1,80 @@
+Managing Concurrent Pipelines
+with Go Context
+29 Nov 2016
+
+Loh Siu Yin
+Technology Consultant, Beyond Broadcast LLP
+siuyin@beyondbroadcast.com
+
+* Goroutines 1.01
+twoRtn/main.go:
+.play -edit twoRtn/main.go /010/,/020/
+.code twoRtn/main.go /030/,/040/
+
+Predict the number of dots and crosses.
+
+* A transformation pipeline
+First a generator to feed the pipeline with integer values.
+xform/main.go:
+.code xform/main.go /030/,/040/
+
+* Next a tranformer.
+Below is a doubler long-running server.
+xform/main.go:
+.code xform/main.go /050/,/060/
+
+* Transformers in action
+xform/main.go:
+.play -edit xform/main.go /010/,/020/
+
+Do the *dbl* servers shutdown when main is doing other work?
+When are the *dbl* server resources reclaimed?
+What if "other work" is a forever loop? Will the *dbl* resources be reclaimed?
+
+
+* Cancelling the dbl agents
+xform2/main.go:
+.code xform2/main.go /050/,/060/
+We now name the dbl servers and ask them to listen on a *done* channel.
+
+* Main 2
+xform2/main.go:
+.play -edit xform2/main.go /010/,/020/
+Will agents "a" *and* "b" be cancelled -- um I mean shut down?
+Try running main a few times...
+Why does *close* work?
+Ans: Because a read on a closed channel succeeds yielding the zero value.
+
+* stdlib package Context (go 1.7)
+Package context defines the *Context* type, which carries:
+
+- deadlines
+- cancelation signals
+- other request-scoped values
+across API boundaries and between processes.
+
+--
+
+Incoming requests to a server should create a Context.
+
+Outgoing calls to servers should accept a Context.
+
+* Incoming requests to a server should create a Context.
+ctx/main.go:
+.code ctx/main.go /030/,/040/
+
+*gen* now returns:
+
+- a context
+- a cancel *function*
+- the integer channel (as before)
+context.Background() is the "zero value" for a context.Context.
+
+* Agents with implanted kill-switches
+.code ctx/main.go /050/,/060/
+Aside from context Done(), there are Deadline(), Err() and Value(key interface{}).
+Use context Values only for request-scoped data that transits processes and APIs, not for passing optional parameters to functions.
+
+* Context cancellation in action.
+ctx/main.go:
+.play -edit ctx/main.go /010/,/020/
