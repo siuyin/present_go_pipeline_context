@@ -10,10 +10,10 @@ func main() {
 	go disp("+", 3)
 	go disp(".", 2)
 	fmt.Println("main start")
-	for i := 1; i <= 4; i++ { // try reducing to 3 or 2
+	for i := 1; i <= 4; i++ { // try reducing to 3 or 2 // HL
 		time.Sleep(time.Second)
 	}
-	time.Sleep(10 * time.Millisecond) // clean-up
+	time.Sleep(10 * time.Millisecond) // clean-up // HL
 	fmt.Println("\nmain end")
 }
 

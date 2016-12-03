@@ -11,21 +11,24 @@ type contextKey string
 
 func main() {
 	n := 3
-	ctx, cancel, c1 := gen(n) // generate n integers
+	ctx, cancel, c1 := gen(n, "genA") // generate n integers with source ID
+	// source ID is an example of data that is tied to a request.
+	// ie. request-scoped data
+
 	c2 := dbl(ctx, "a", c1)
 	c3 := dbl(ctx, "b", c2)
 	for i := 1; i <= n; i++ {
 		fmt.Println(<-c3)
 	}
-	cancel() // across process and API boundaries !
+	cancel() // HL
 	time.Sleep(10 * time.Millisecond)
 }
 
 //020 OMIT
 //030 OMIT
-func gen(n int) (context.Context, context.CancelFunc, <-chan int) {
+func gen(n int, srcID string) (context.Context, context.CancelFunc, <-chan int) {
 	ctx, cancel := context.WithCancel(context.Background()) // HL
-	ctx = context.WithValue(ctx, contextKey("name"), "genA")
+	ctx = context.WithValue(ctx, contextKey("name"), srcID)
 	ch := make(chan int)
 	go func() {
 		for i := 1; i <= n; i++ {

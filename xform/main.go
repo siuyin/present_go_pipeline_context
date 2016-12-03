@@ -10,9 +10,9 @@ func main() {
 	n := 3
 	c1 := gen(n) // generate n integers
 	c2 := dbl(c1)
-	//c3 := dbl(c2)
+	//c3 := dbl(c2) // HL
 	for i := 1; i <= n; i++ {
-		fmt.Println(<-c2) // uncomment c3 and read from c3
+		fmt.Println(<-c2) // uncomment c3 and read from c3 // HL
 	}
 	// Do other work.
 	time.Sleep(10 * time.Millisecond)

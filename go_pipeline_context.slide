@@ -52,6 +52,7 @@ Package context defines the *Context* type, which carries:
 - cancelation signals
 - other request-scoped values
 across API boundaries and between processes.
+The same Context may be passed to functions running in different *goroutines*; Contexts are safe for simultaneous use by multiple *goroutines*.
 
 --
 
@@ -64,7 +65,6 @@ ctx/main.go:
 .code ctx/main.go /030/,/040/
 
 *gen* now returns:
-
 - a context
 - a cancel *function*
 - the integer channel (as before)
@@ -78,3 +78,28 @@ Use context Values only for request-scoped data that transits processes and APIs
 * Context cancellation in action.
 ctx/main.go:
 .play -edit ctx/main.go /010/,/020/
+
+* Cancellation with os/exec
+Go 1.7 moves the golang.org/x/net/context package into the standard library as context. This allows the use of contexts for cancelation, timeouts, and passing request-scoped data in other standard library packages, including net, net/http, and os/exec.
+
+exec/main.go:
+.play -edit exec/main.go /010/,/020/
+
+* http Contexts
+Server: ht/svr/main.go:
+.play -edit ht/svr/main.go /010/,/020/
+
+Test the server:
+
+ http://localhost:4998/dbl?q=2
+ for n in 1 2 3 ; do curl "http://localhost:4998/dbl?q=$n" & done
+
+* http goroutine with context timeout
+.code -numbers ht/svr/main.go /030/,/040/
+
+* http client with Context
+ht/cl/main.go:
+.play -edit ht/cl/main.go /010/,/020/
+
+* httpDo
+.code -numbers ht/cl/main.go /030/,/040/

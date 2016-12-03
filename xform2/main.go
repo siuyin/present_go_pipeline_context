@@ -15,8 +15,8 @@ func main() {
 	for i := 1; i <= n; i++ {
 		fmt.Println(<-c3)
 	}
-	done <- true // ; done <- true
-	//close(done)
+	done <- true // ; done <- true // HL
+	//close(done)  // HL
 	// Do other work.
 	time.Sleep(10 * time.Millisecond)
 }
